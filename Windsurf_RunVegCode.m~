@@ -1,0 +1,54 @@
+%Windsurf_RunVegCode.m - Code to implement vegetation routine originally from CDM but from outside of the C++ model
+    %THIS CODE IS STILL A WORK IN PROGRESS!
+    %Written by N. Cohn
+
+if project.flag.VegCode == 1
+            
+    %set up vegetation and calculate temporal vegetation growth
+    if run_number == 1
+            iuse = find(grids.CDM.ZD>=veg.all.elevMin & grids.CDM.ZD<=veg.all.elevMax);
+            veg.CDM.vegmatrix = zeros(size(grids.CDM.ZD));
+            veg.CDM.vegmatrix(iuse) = veg.CDM.startingDensity; %starting vegetation density - ultimately this probably shouldnt be hard coded 
+            dlmwrite([project.Directory, filesep, 'cdm', filesep, 'init_vx.dat'], veg.CDM.vegmatrix', 'delimiter', ' ');   
+            dlmwrite([project.Directory, filesep, 'cdm', filesep, 'init_vy.dat'], zeros(size(veg.CDM.vegmatrix')), 'delimiter', ' ');   
+            run.veget = veg.CDM.vegmatrix(round(grids.ny/2), :);
+
+            %set up Lveg - constant throughout simulation
+            [~, iveg] = min(abs(run.z-veg.all.elevMin));
+            xmin = iveg;
+
+    else %perform vegetation growth
+        try
+            dhdt = run.wind_dz(:)';
+        catch err
+            dhdt = zeros(size(run.z(:)'));
+        end
+            run.veget = cdm_veg_routine_1d(project, veg, grids, run.veget, dhdt, xmin);
+    end
+    
+    %eliminate vegetation if it was knocked out by waves & water levels
+    if project.flag.XB == 1 && run_number>1 %need to update the vegetation grid if there was erosion from XBeach
+         erosion_threshold = -0.05; %hardcode while testing this value
+         ierode = find(run.wave_dz < erosion_threshold & run.veget > 0);
+         run.veget(ierode) = 0; %set vegetation back to zero density if vertical rates of erosion sufficient
+         
+         %if the water level has been above the vegetation for more than the threshold than assume it has died - this really eliminates the need for a Lveg condition
+         flood_threshold = 0.1;
+         iflood = find((run.z - project.twl(run_number)+flood_threshold)<0);
+         run.veget(iflood) = 0; %set vegetation back to zero density if vertical rates of erosion sufficient
+    end
+
+    if project.flag.XB == 1 && run_number>1 %need to update the vegetation grid if there was erosion from XBeach
+         accretion_threshold = 0.1; %hardcode while testing this value
+         iacc = find(run.wave_dz > accretion_threshold & run.veget > 0);
+         run.veget(iacc) = 0; %set vegetation back to zero density if vertical rates of erosion sufficient
+         
+         %if the water level has been above the vegetation for more than the threshold than assume it has died - this really eliminates the need for a Lveg condition
+         flood_threshold = 0.1;
+         iflood = find((run.z - project.twl(run_number)+flood_threshold)<0);
+         run.veget(iflood) = 0; %set vegetation back to zero density if vertical rates of erosion sufficient
+    end    
+    
+    
+    clear dhdt ierode iflood flood_threshold erosion_threshold iveg iuse
+end
