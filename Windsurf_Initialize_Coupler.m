@@ -40,7 +40,8 @@ if startingSim == 1 %if code crashes part way through simulation this allows res
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'times', 'Dimensions', {'r' numel(project.Times_days)+1});
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'dz_wave', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'dz_wind', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
-   
+   nccreate([project.Directory, filesep, 'windsurf.nc'], 'total_water_level', 'Dimensions', {'r' numel(project.Times_days)+1});
+  
    %write out the pre-time step to the model - this is so that the initial Z value is appropriately recorded (e.g., not after 1 time step) 
    ncwrite([project.Directory, filesep, 'windsurf.nc'], 'zb', Z(:)', [1 1]);
    ncwrite([project.Directory, filesep, 'windsurf.nc'], 'dz_wind', zeros(size(Z')), [1 1]);
