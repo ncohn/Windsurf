@@ -7,16 +7,12 @@
     try %if its an xbeach only run then wont have this data    
         ncwrite([project.Directory, filesep, 'windsurf.nc'], 'dz_wind', run.wind_dz(:)', [run_number+1 1]);
         ncwrite([project.Directory, filesep, 'windsurf.nc'], 'veget', run.veget(:)', [run_number+1 1]);
-        ncwrite([project.Directory, filesep, 'windsurf.nc'], 'u', run.u(:)', [run_number+1 1]);
-        ncwrite([project.Directory, filesep, 'windsurf.nc'], 'shear', run.shear(:)', [run_number+1 1]);
     catch err
     end
     
     if project.flag.XB>0
         try %only xbeach simulations should have this        
             ncwrite([project.Directory, filesep, 'windsurf.nc'], 'dz_wave', run.wave_dz(:)', [run_number+1 1]);
-            ncwrite([project.Directory, filesep, 'windsurf.nc'], 'Hmean', run.Hmean(:)', [run_number+1 1]);
-            ncwrite([project.Directory, filesep, 'windsurf.nc'], 'zsmax', run.zsmax(:)', [run_number+1 1]);
         catch err
         end
     end

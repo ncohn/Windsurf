@@ -34,28 +34,18 @@ if startingSim == 1 %if code crashes part way through simulation this allows res
 
    %Set Up Variables for output files
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'zb', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
-   nccreate([project.Directory, filesep, 'windsurf.nc'], 'u', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
-   nccreate([project.Directory, filesep, 'windsurf.nc'], 'shear', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'veget', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'x', 'Dimensions', {'c' numel(X)});
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'y', 'Dimensions', {'c' numel(X)});
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'times', 'Dimensions', {'r' numel(project.Times_days)+1});
-   nccreate([project.Directory, filesep, 'windsurf.nc'], 'total_water_level', 'Dimensions', {'r' numel(project.Times_days)+1});
-   nccreate([project.Directory, filesep, 'windsurf.nc'], 'pickup', 'Dimensions', {'r' numel(project.Times_days)+1 'dim1' inf 'c' numel(X)});
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'dz_wave', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
    nccreate([project.Directory, filesep, 'windsurf.nc'], 'dz_wind', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
-   nccreate([project.Directory, filesep, 'windsurf.nc'], 'Hmean', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
-   nccreate([project.Directory, filesep, 'windsurf.nc'], 'zsmax', 'Dimensions', {'r' numel(project.Times_days)+1 'c' numel(X)});
    
    %write out the pre-time step to the model - this is so that the initial Z value is appropriately recorded (e.g., not after 1 time step) 
    ncwrite([project.Directory, filesep, 'windsurf.nc'], 'zb', Z(:)', [1 1]);
    ncwrite([project.Directory, filesep, 'windsurf.nc'], 'dz_wind', zeros(size(Z')), [1 1]);
    ncwrite([project.Directory, filesep, 'windsurf.nc'], 'veget', zeros(size(Z')), [1 1]);
-   ncwrite([project.Directory, filesep, 'windsurf.nc'], 'u', zeros(size(Z')), [1 1]);
-   ncwrite([project.Directory, filesep, 'windsurf.nc'], 'shear', zeros(size(Z')), [1 1]);
    ncwrite([project.Directory, filesep, 'windsurf.nc'], 'dz_wave', zeros(size(Z')), [1 1]);
-   ncwrite([project.Directory, filesep, 'windsurf.nc'], 'Hmean', zeros(size(Z')), [1 1]);
-   ncwrite([project.Directory, filesep, 'windsurf.nc'], 'zsmax', zeros(size(Z')), [1 1]);
     
    %Write Non-Changing Variables to NetCDF
    ncwrite([project.Directory, filesep, 'windsurf.nc'], 'x', X);
